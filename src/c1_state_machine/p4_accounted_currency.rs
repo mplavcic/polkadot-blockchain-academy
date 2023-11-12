@@ -46,9 +46,6 @@ impl StateMachine for AccountedCurrency {
 
         match t {
             AccountingTransaction::Mint{ minter, amount } => {
-                // stvori ako ne postoji user
-                // ako postoji povecaj iznos za amount
-                // ako je amount 0 i ne postoji user, NEMOJ stvorit
                 if *amount > 0 {
                     next_state
                         .entry(*minter)
@@ -57,8 +54,6 @@ impl StateMachine for AccountedCurrency {
                 }
             },
             AccountingTransaction::Burn{ burner, amount } => {
-                // ako burna do nule ili vise, izbrisi usera
-                // ako burner ne postoji, nista se ne dogodi
                 if let Some(value) = starting_state.get(burner) {
                     if value > amount {
                         next_state.entry(*burner).and_modify(|starting_amount| *starting_amount -= amount);
@@ -68,11 +63,6 @@ impl StateMachine for AccountedCurrency {
                 }
             },
             AccountingTransaction::Transfer{ sender, receiver, amount } => {
-                // ako su sender i receiver isti, nista se ne dogodi *****CHECK
-                // ako sender proba transferat vise nego sta ima, nista se ne dogodi *****CHECK
-                // ako sender ne postoji, nista se ne dogodi *****CHECK
-                // ako reciever ne postoji, stvori ga i dodaj mu amount ****CHECK
-                // ako sender transfera sve sta ima, izbrisi ga
                 if sender == receiver {
                     return next_state;
                 }
