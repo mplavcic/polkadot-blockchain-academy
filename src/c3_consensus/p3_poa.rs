@@ -14,46 +14,46 @@ use super::{Consensus, ConsensusAuthority, Header};
 /// A Proof of Authority consensus engine. If any of the authorities have signed the block, it is
 /// valid.
 struct SimplePoa {
-	authorities: Vec<ConsensusAuthority>,
+    authorities: Vec<ConsensusAuthority>,
 }
 
 impl Consensus for SimplePoa {
-	type Digest = ConsensusAuthority;
+    type Digest = ConsensusAuthority;
 
-	fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
-		todo!("Exercise 1")
-	}
+    fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
+        todo!("Exercise 1")
+    }
 
-	fn seal(
-		&self,
-		parent_digest: &Self::Digest,
-		partial_header: Header<()>,
-	) -> Option<Header<Self::Digest>> {
-		todo!("Exercise 2")
-	}
+    fn seal(
+        &self,
+        parent_digest: &Self::Digest,
+        partial_header: Header<()>,
+    ) -> Option<Header<Self::Digest>> {
+        todo!("Exercise 2")
+    }
 }
 
 /// A Proof of Authority consensus engine. Only one authority is valid at each block height.
 /// As ever, the genesis block does not require a seal. After that the authorities take turns
 /// in order.
 struct PoaRoundRobinByHeight {
-	authorities: Vec<ConsensusAuthority>,
+    authorities: Vec<ConsensusAuthority>,
 }
 
 impl Consensus for PoaRoundRobinByHeight {
-	type Digest = ConsensusAuthority;
+    type Digest = ConsensusAuthority;
 
-	fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
-		todo!("Exercise 3")
-	}
+    fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
+        todo!("Exercise 3")
+    }
 
-	fn seal(
-		&self,
-		parent_digest: &Self::Digest,
-		partial_header: Header<()>,
-	) -> Option<Header<Self::Digest>> {
-		todo!("Exercise 4")
-	}
+    fn seal(
+        &self,
+        parent_digest: &Self::Digest,
+        partial_header: Header<()>,
+    ) -> Option<Header<Self::Digest>> {
+        todo!("Exercise 4")
+    }
 }
 
 /// Both of the previous PoA schemes have the weakness that a single dishonest authority can corrupt
@@ -66,7 +66,7 @@ impl Consensus for PoaRoundRobinByHeight {
 /// A common PoA scheme that works around these weaknesses is to divide time into slots, and then do
 /// a round robin by slot instead of by height
 struct PoaRoundRobinBySlot {
-	authorities: Vec<ConsensusAuthority>,
+    authorities: Vec<ConsensusAuthority>,
 }
 
 /// A digest used for PoaRoundRobinBySlot. The digest contains the slot number as well as the
@@ -74,22 +74,22 @@ struct PoaRoundRobinBySlot {
 /// that the slot is always strictly increasing. But remember that slots may be skipped.
 #[derive(Hash, Debug, PartialEq, Eq, Clone, Copy)]
 struct SlotDigest {
-	slot: u64,
-	signature: ConsensusAuthority,
+    slot: u64,
+    signature: ConsensusAuthority,
 }
 
 impl Consensus for PoaRoundRobinBySlot {
-	type Digest = SlotDigest;
+    type Digest = SlotDigest;
 
-	fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
-		todo!("Exercise 5")
-	}
+    fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
+        todo!("Exercise 5")
+    }
 
-	fn seal(
-		&self,
-		parent_digest: &Self::Digest,
-		partial_header: Header<()>,
-	) -> Option<Header<Self::Digest>> {
-		todo!("Exercise 6")
-	}
+    fn seal(
+        &self,
+        parent_digest: &Self::Digest,
+        partial_header: Header<()>,
+    ) -> Option<Header<Self::Digest>> {
+        todo!("Exercise 6")
+    }
 }

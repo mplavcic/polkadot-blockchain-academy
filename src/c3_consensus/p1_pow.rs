@@ -10,28 +10,28 @@ use super::{Consensus, Header};
 /// implemented in the previous chapter. Here we simply re-implement it in the
 /// consensus framework that will be used throughout this chapter.
 pub struct PoW {
-	threshold: u64,
+    threshold: u64,
 }
 
 impl Consensus for PoW {
-	type Digest = u64;
+    type Digest = u64;
 
-	/// Check that the provided header's hash is below the required threshold.
-	/// This does not rely on the parent digest at all.
-	fn validate(&self, _: &Self::Digest, header: &Header<Self::Digest>) -> bool {
-		todo!("Exercise 1")
-	}
+    /// Check that the provided header's hash is below the required threshold.
+    /// This does not rely on the parent digest at all.
+    fn validate(&self, _: &Self::Digest, header: &Header<Self::Digest>) -> bool {
+        todo!("Exercise 1")
+    }
 
-	/// Mine a new PoW seal for the partial header provided.
-	/// This does not rely on the parent digest at all.
-	fn seal(&self, _: &Self::Digest, partial_header: Header<()>) -> Option<Header<Self::Digest>> {
-		todo!("Exercise 2")
-	}
+    /// Mine a new PoW seal for the partial header provided.
+    /// This does not rely on the parent digest at all.
+    fn seal(&self, _: &Self::Digest, partial_header: Header<()>) -> Option<Header<Self::Digest>> {
+        todo!("Exercise 2")
+    }
 }
 
 /// Create a PoW consensus engine that has a difficulty threshold such that roughly 1 in 100 blocks
 /// with randomly drawn nonces will be valid. That is: the threshold should be u64::max_value() /
 /// 100.
 pub fn moderate_difficulty_pow() -> impl Consensus {
-	todo!("Exercise 3")
+    todo!("Exercise 3")
 }

@@ -18,46 +18,46 @@ type Hash = u64;
 /// into the header.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Header {
-	parent: Hash,
-	height: u64,
-	extrinsic: u64,
-	state: u64,
-	// Still no consensus. That's the next part.
-	consensus_digest: (),
+    parent: Hash,
+    height: u64,
+    extrinsic: u64,
+    state: u64,
+    // Still no consensus. That's the next part.
+    consensus_digest: (),
 }
 
 // Here are the methods for creating new header and verifying headers.
 // It is your job to write them.
 impl Header {
-	/// Returns a new valid genesis header.
-	fn genesis() -> Self {
-		todo!("Exercise 1")
-	}
+    /// Returns a new valid genesis header.
+    fn genesis() -> Self {
+        todo!("Exercise 1")
+    }
 
-	/// Create and return a valid child header.
-	///
-	/// This blockchain will work as an adder. That means that the state starts at zero,
-	/// and at each block we add the extrinsic to the state.
-	fn child(&self, extrinsic: u64) -> Self {
-		todo!("Exercise 2")
-	}
+    /// Create and return a valid child header.
+    ///
+    /// This blockchain will work as an adder. That means that the state starts at zero,
+    /// and at each block we add the extrinsic to the state.
+    fn child(&self, extrinsic: u64) -> Self {
+        todo!("Exercise 2")
+    }
 
-	/// Verify that all the given headers form a valid chain from this header to the tip.
-	///
-	/// In addition to the consecutive heights and linked hashes, we now need to consider our state.
-	///
-	/// So in order for a block to verify, we must have the above explained relationship between the
-	/// extrinsic, the previous state, and the current state.
-	fn verify_sub_chain(&self, chain: &[Header]) -> bool {
-		todo!("Exercise 3")
-	}
+    /// Verify that all the given headers form a valid chain from this header to the tip.
+    ///
+    /// In addition to the consecutive heights and linked hashes, we now need to consider our state.
+    ///
+    /// So in order for a block to verify, we must have the above explained relationship between the
+    /// extrinsic, the previous state, and the current state.
+    fn verify_sub_chain(&self, chain: &[Header]) -> bool {
+        todo!("Exercise 3")
+    }
 }
 
 // And finally a few functions to use the code we just
 
 /// Build and return a valid chain with the given number of blocks.
 fn build_valid_chain(n: u64) -> Vec<Header> {
-	todo!("Exercise 4")
+    todo!("Exercise 4")
 }
 
 /// Build and return a chain with at least three headers.
@@ -71,7 +71,7 @@ fn build_valid_chain(n: u64) -> Vec<Header> {
 /// For this function, ONLY USE the the `genesis()` and `child()` methods to create blocks.
 /// The exercise is still possible.
 fn build_an_invalid_chain() -> Vec<Header> {
-	todo!("Exercise 5")
+    todo!("Exercise 5")
 }
 
 /// Build and return two header chains.
@@ -86,127 +86,127 @@ fn build_an_invalid_chain() -> Vec<Header> {
 ///
 /// Side question: What is the fewest number of headers you could create to achieve this goal.
 fn build_forked_chain() -> (Vec<Header>, Vec<Header>) {
-	todo!("Exercise 6")
+    todo!("Exercise 6")
 
-	// Exercise 7: After you have completed this task, look at how its test is written below.
-	// There is a critical thinking question for you there.
+    // Exercise 7: After you have completed this task, look at how its test is written below.
+    // There is a critical thinking question for you there.
 }
 
 // To run these tests: `cargo test bc_2`
 #[test]
 fn bc_2_genesis_block_height() {
-	let g = Header::genesis();
-	assert!(g.height == 0);
+    let g = Header::genesis();
+    assert!(g.height == 0);
 }
 
 #[test]
 fn bc_2_genesis_block_parent() {
-	let g = Header::genesis();
-	assert!(g.parent == 0);
+    let g = Header::genesis();
+    assert!(g.parent == 0);
 }
 
 #[test]
 fn bc_2_genesis_block_extrinsic() {
-	// Typically genesis blocks do not have any extrinsics.
-	// In Substrate they never do. So our convention is to have the extrinsic be 0.
-	let g = Header::genesis();
-	assert!(g.extrinsic == 0);
+    // Typically genesis blocks do not have any extrinsics.
+    // In Substrate they never do. So our convention is to have the extrinsic be 0.
+    let g = Header::genesis();
+    assert!(g.extrinsic == 0);
 }
 
 #[test]
 fn bc_2_genesis_block_state() {
-	let g = Header::genesis();
-	assert!(g.state == 0);
+    let g = Header::genesis();
+    assert!(g.state == 0);
 }
 
 #[test]
 fn bc_2_child_block_height() {
-	let g = Header::genesis();
-	let b1 = g.child(0);
-	assert!(b1.height == 1);
+    let g = Header::genesis();
+    let b1 = g.child(0);
+    assert!(b1.height == 1);
 }
 
 #[test]
 fn bc_2_child_block_parent() {
-	let g = Header::genesis();
-	let b1 = g.child(0);
-	assert!(b1.parent == hash(&g));
+    let g = Header::genesis();
+    let b1 = g.child(0);
+    assert!(b1.parent == hash(&g));
 }
 
 #[test]
 fn bc_2_child_block_extrinsic() {
-	let g = Header::genesis();
-	let b1 = g.child(7);
-	assert_eq!(b1.extrinsic, 7);
+    let g = Header::genesis();
+    let b1 = g.child(7);
+    assert_eq!(b1.extrinsic, 7);
 }
 
 #[test]
 fn bc_2_child_block_state() {
-	let g = Header::genesis();
-	let b1 = g.child(7);
-	assert_eq!(b1.state, 7);
+    let g = Header::genesis();
+    let b1 = g.child(7);
+    assert_eq!(b1.state, 7);
 }
 
 #[test]
 fn bc_2_verify_genesis_only() {
-	let g = Header::genesis();
+    let g = Header::genesis();
 
-	assert!(g.verify_sub_chain(&[]));
+    assert!(g.verify_sub_chain(&[]));
 }
 
 #[test]
 fn bc_2_verify_three_blocks() {
-	let g = Header::genesis();
-	let b1 = g.child(5);
-	let b2 = b1.child(6);
+    let g = Header::genesis();
+    let b1 = g.child(5);
+    let b2 = b1.child(6);
 
-	assert_eq!(b2.state, 11);
-	assert!(g.verify_sub_chain(&[b1, b2]));
+    assert_eq!(b2.state, 11);
+    assert!(g.verify_sub_chain(&[b1, b2]));
 }
 
 #[test]
 fn bc_2_cant_verify_invalid_parent() {
-	let g = Header::genesis();
-	let mut b1 = g.child(5);
-	b1.parent = 10;
+    let g = Header::genesis();
+    let mut b1 = g.child(5);
+    b1.parent = 10;
 
-	assert!(!g.verify_sub_chain(&[b1]));
+    assert!(!g.verify_sub_chain(&[b1]));
 }
 
 #[test]
 fn bc_2_cant_verify_invalid_number() {
-	let g = Header::genesis();
-	let mut b1 = g.child(5);
-	b1.height = 10;
+    let g = Header::genesis();
+    let mut b1 = g.child(5);
+    b1.height = 10;
 
-	assert!(!g.verify_sub_chain(&[b1]));
+    assert!(!g.verify_sub_chain(&[b1]));
 }
 
 #[test]
 fn bc_2_cant_verify_invalid_state() {
-	let g = Header::genesis();
-	let mut b1 = g.child(5);
-	b1.state = 10;
+    let g = Header::genesis();
+    let mut b1 = g.child(5);
+    b1.state = 10;
 
-	assert!(!g.verify_sub_chain(&[b1]));
+    assert!(!g.verify_sub_chain(&[b1]));
 }
 
 #[test]
 fn bc_2_verify_forked_chain() {
-	let g = Header::genesis();
-	let (c1, c2) = build_forked_chain();
+    let g = Header::genesis();
+    let (c1, c2) = build_forked_chain();
 
-	// Both chains have the same valid genesis block
-	assert_eq!(g, c1[0]);
-	assert_eq!(g, c2[0]);
+    // Both chains have the same valid genesis block
+    assert_eq!(g, c1[0]);
+    assert_eq!(g, c2[0]);
 
-	// Both chains are individually valid
-	assert!(g.verify_sub_chain(&c1[1..]));
-	assert!(g.verify_sub_chain(&c2[1..]));
+    // Both chains are individually valid
+    assert!(g.verify_sub_chain(&c1[1..]));
+    assert!(g.verify_sub_chain(&c2[1..]));
 
-	// The two chains are not identical
-	// Question for students: I've only compared the last blocks here.
-	// Is that enough? Is it possible that the two chains have the same final block,
-	// but differ somewhere else?
-	assert_ne!(c1.last(), c2.last());
+    // The two chains are not identical
+    // Question for students: I've only compared the last blocks here.
+    // Is that enough? Is it possible that the two chains have the same final block,
+    // but differ somewhere else?
+    assert_ne!(c1.last(), c2.last());
 }

@@ -15,24 +15,24 @@ use super::{Consensus, Header};
 struct EvenOnly<Inner: Consensus>(PhantomData<Inner>);
 
 impl<Inner: Consensus> Consensus for EvenOnly<Inner> {
-	type Digest = Inner::Digest;
+    type Digest = Inner::Digest;
 
-	fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
-		todo!("Exercise 1")
-	}
+    fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
+        todo!("Exercise 1")
+    }
 
-	fn seal(
-		&self,
-		parent_digest: &Self::Digest,
-		partial_header: Header<()>,
-	) -> Option<Header<Self::Digest>> {
-		todo!("Exercise 2")
-	}
+    fn seal(
+        &self,
+        parent_digest: &Self::Digest,
+        partial_header: Header<()>,
+    ) -> Option<Header<Self::Digest>> {
+        todo!("Exercise 2")
+    }
 }
 
 /// Using the moderate difficulty PoW algorithm you created in section 1 of this chapter as the
 /// inner engine, create a PoW chain that is valid according to the inner consensus engine, but is
 /// not valid according to this engine because the state roots are not all even.
 fn almost_valid_but_not_all_even() -> Vec<Header<u64>> {
-	todo!("Exercise 3")
+    todo!("Exercise 3")
 }

@@ -13,52 +13,52 @@ use super::{Consensus, ConsensusAuthority, Header};
 /// A Higher-order consensus engine that represents a change from one set of consensus rules
 /// (Before) to another set (After) at a specific block height
 struct Forked<D, Before, After> {
-	/// The first block height at which the new consensus rules apply
-	fork_height: u64,
-	phdata: PhantomData<(D, Before, After)>,
+    /// The first block height at which the new consensus rules apply
+    fork_height: u64,
+    phdata: PhantomData<(D, Before, After)>,
 }
 
 impl<D, B, A> Consensus for Forked<D, B, A>
 where
-	D: Clone + core::fmt::Debug + Eq + PartialEq + std::hash::Hash,
-	B: Consensus,
-	A: Consensus,
-	B::Digest: Into<D>,
-	A::Digest: Into<D>,
+    D: Clone + core::fmt::Debug + Eq + PartialEq + std::hash::Hash,
+    B: Consensus,
+    A: Consensus,
+    B::Digest: Into<D>,
+    A::Digest: Into<D>,
 {
-	type Digest = D;
+    type Digest = D;
 
-	fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
-		todo!("Exercise 1")
-	}
+    fn validate(&self, parent_digest: &Self::Digest, header: &Header<Self::Digest>) -> bool {
+        todo!("Exercise 1")
+    }
 
-	fn seal(
-		&self,
-		parent_digest: &Self::Digest,
-		partial_header: Header<()>,
-	) -> Option<Header<Self::Digest>> {
-		todo!("Exercise 2")
-	}
+    fn seal(
+        &self,
+        parent_digest: &Self::Digest,
+        partial_header: Header<()>,
+    ) -> Option<Header<Self::Digest>> {
+        todo!("Exercise 2")
+    }
 }
 
 /// Create a PoA consensus engine that changes authorities part way through the chain's history.
 /// Given the initial authorities, the authorities after the fork, and the height at which the fork
 /// occurs.
 fn change_authorities(
-	fork_height: u64,
-	initial_authorities: Vec<ConsensusAuthority>,
-	final_authorities: Vec<ConsensusAuthority>,
+    fork_height: u64,
+    initial_authorities: Vec<ConsensusAuthority>,
+    final_authorities: Vec<ConsensusAuthority>,
 ) -> impl Consensus {
-	todo!("Exercise 3")
+    todo!("Exercise 3")
 }
 
 /// Create a PoW consensus engine that changes the difficulty part way through the chain's history.
 fn change_difficulty(
-	fork_height: u64,
-	initial_difficulty: u64,
-	final_difficulty: u64,
+    fork_height: u64,
+    initial_difficulty: u64,
+    final_difficulty: u64,
 ) -> impl Consensus {
-	todo!("Exercise 4")
+    todo!("Exercise 4")
 }
 
 /// Earlier in this chapter we implemented a consensus rule in which blocks are only considered
@@ -70,7 +70,7 @@ fn change_difficulty(
 /// Other than the evenness requirement, the consensus rules should not change at the fork. This
 /// function should work with either PoW, PoA, or anything else as the underlying consensus engine.
 fn even_after_given_height<Original: Consensus>(fork_height: u64) -> impl Consensus {
-	todo!("Exercise 5")
+    todo!("Exercise 5")
 }
 
 /// So far we have considered the simpler case where the consensus engines before and after the fork
@@ -81,20 +81,20 @@ fn even_after_given_height<Original: Consensus>(fork_height: u64) -> impl Consen
 /// enum that wraps the two individual digest types
 #[derive(Hash, Debug, PartialEq, Eq, Clone, Copy)]
 enum PowOrPoaDigest {
-	Pow(u64),
-	Poa(ConsensusAuthority),
+    Pow(u64),
+    Poa(ConsensusAuthority),
 }
 
 impl From<u64> for PowOrPoaDigest {
-	fn from(d: u64) -> Self {
-		PowOrPoaDigest::Pow(d)
-	}
+    fn from(d: u64) -> Self {
+        PowOrPoaDigest::Pow(d)
+    }
 }
 
 impl From<ConsensusAuthority> for PowOrPoaDigest {
-	fn from(d: ConsensusAuthority) -> Self {
-		PowOrPoaDigest::Poa(d)
-	}
+    fn from(d: ConsensusAuthority) -> Self {
+        PowOrPoaDigest::Poa(d)
+    }
 }
 
 /// In the spirit of Ethereum's recent switch from PoW to PoA, let us model a similar
@@ -102,9 +102,9 @@ impl From<ConsensusAuthority> for PowOrPoaDigest {
 /// handoff was considerably more complex than it may appear in our simplified example, although
 /// the fundamentals are the same.
 fn pow_to_poa(
-	fork_height: u64,
-	difficulty: u64,
-	authorities: Vec<ConsensusAuthority>,
+    fork_height: u64,
+    difficulty: u64,
+    authorities: Vec<ConsensusAuthority>,
 ) -> impl Consensus {
-	todo!("Exercise 6")
+    todo!("Exercise 6")
 }

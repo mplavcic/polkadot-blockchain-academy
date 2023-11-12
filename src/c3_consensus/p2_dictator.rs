@@ -12,19 +12,19 @@ use super::{Consensus, ConsensusAuthority, Header};
 /// identity who is the only identity authorized to sign valid blocks. Any block signed by the
 /// dictator is valid (at the consensus level), and any block not signed by the dictator is invalid.
 struct DictatorConsensus {
-	dictator: ConsensusAuthority,
+    dictator: ConsensusAuthority,
 }
 
 impl Consensus for DictatorConsensus {
-	type Digest = ConsensusAuthority;
+    type Digest = ConsensusAuthority;
 
-	/// Check that the header is signed by the dictator
-	fn validate(&self, _: &Self::Digest, header: &Header<Self::Digest>) -> bool {
-		todo!("Exercise 1")
-	}
+    /// Check that the header is signed by the dictator
+    fn validate(&self, _: &Self::Digest, header: &Header<Self::Digest>) -> bool {
+        todo!("Exercise 1")
+    }
 
-	/// Sign the given partial header by the dictator
-	fn seal(&self, _: &Self::Digest, partial_header: Header<()>) -> Option<Header<Self::Digest>> {
-		todo!("Exercise 2")
-	}
+    /// Sign the given partial header by the dictator
+    fn seal(&self, _: &Self::Digest, partial_header: Header<()>) -> Option<Header<Self::Digest>> {
+        todo!("Exercise 2")
+    }
 }
