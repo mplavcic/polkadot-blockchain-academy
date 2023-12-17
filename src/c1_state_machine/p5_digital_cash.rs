@@ -94,7 +94,87 @@ impl StateMachine for DigitalCashSystem {
     type Transition = CashTransaction;
 
     fn next_state(starting_state: &Self::State, t: &Self::Transition) -> Self::State {
-        todo!("Exercise 1")
+        let mut next_state = starting_state.clone();
+
+        match t {
+            CashTransaction::Mint { minter, amount } => {
+                let bill = Bill {
+                    owner: minter.clone(),
+                    amount: amount.clone(),
+                    serial: starting_state.next_serial,
+                };
+                next_state.add_bill(bill);
+            }
+            CashTransaction::Transfer { spends, receives } => {
+                // if vec spends is empty, state stays the same
+                if spends.is_empty() {
+                    return next_state;
+                }
+                // if vec receives is empty, "burn" all the spent bills
+                if receives.is_empty() {
+                    next_state.bills.retain(|bill| !spends.contains(bill));
+                    return next_state;
+                }
+                // if total amount received overflows or spends and receives have the same bill, state stays the same
+                let mut total_amount_received: u64 = 0;
+                for bill in receives.iter() {
+                    if bill.amount == 0 || spends.contains(bill) {
+                        return next_state;
+                    }
+                    if let None = total_amount_received.checked_add(bill.amount) {
+                        return next_state;
+                    } else {
+                        total_amount_received += bill.amount;
+                    }
+                }
+                // if spending the bill that doesn't exist, state stays the same
+                let mut total_amount_spent = 0;
+                for bill in spends.iter() {
+                    if !next_state.bills.contains(bill) {
+                        return next_state;
+                    }
+                    total_amount_spent += bill.amount;
+                }
+
+                // check for duplicates in spends
+                for i in 0..spends.len() {
+                    for j in (i + 1)..spends.len() {
+                        if spends[i] == spends[j] {
+                            return next_state;
+                        }
+                    }
+                }
+                // check for serial number already seen
+                for i in 0..spends.len() {
+                    for j in 0..receives.len() {
+                        if spends[i].serial == receives[j].serial {
+                            return next_state;
+                        }
+                    }
+                }
+                // check for serial number validity, if not valid, state stays the same
+                let mut j = 0;
+                for i in 0..receives.len() {
+                    if receives[i].serial != (next_state.next_serial + j) {
+                        return next_state;
+                    }
+                    j += 1;
+                }
+                // if total amount received is bigger than total amount spent, state stays the same
+                if total_amount_received > total_amount_spent {
+                    return next_state;
+                }
+                // all the conditions are satisifed, so we can insert received bills into hashset
+                // and remove spent bills from hashset
+                receives.iter().for_each(|bill| {
+                    next_state.add_bill(bill.clone());
+                });
+                spends.iter().for_each(|bill| {
+                    next_state.bills.remove(bill);
+                });
+            }
+        }
+        next_state
     }
 }
 
