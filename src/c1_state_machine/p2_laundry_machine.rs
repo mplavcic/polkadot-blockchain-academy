@@ -41,115 +41,88 @@ impl StateMachine for ClothesMachine {
 
     fn next_state(starting_state: &ClothesState, t: &ClothesAction) -> ClothesState {
         match t {
-            &ClothesAction::Wear => match starting_state {
-                &ClothesState::Clean(mut life) => {
+            ClothesAction::Wear => match starting_state {
+                ClothesState::Clean(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Dirty(life);
-                        new_state
+                        ClothesState::Dirty(life)
                     }
                 }
-                &ClothesState::Dirty(mut life) => {
+                ClothesState::Dirty(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Dirty(life);
-                        new_state
+                        ClothesState::Dirty(life)
                     }
                 }
-                &ClothesState::Wet(mut life) => {
+                ClothesState::Wet(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Dirty(life);
-                        new_state
+                        ClothesState::Dirty(life)
                     }
                 }
-                &ClothesState::Tattered => {
-                    let new_state = ClothesState::Tattered;
-                    new_state
-                }
+                ClothesState::Tattered => ClothesState::Tattered,
             },
 
-            &ClothesAction::Wash => match starting_state {
-                &ClothesState::Clean(mut life) => {
+            ClothesAction::Wash => match starting_state {
+                ClothesState::Clean(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Wet(life);
-                        new_state
+                        ClothesState::Wet(life)
                     }
                 }
-                &ClothesState::Dirty(mut life) => {
+                ClothesState::Dirty(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Wet(life);
-                        new_state
+                        ClothesState::Wet(life)
                     }
                 }
-                &ClothesState::Wet(mut life) => {
+                ClothesState::Wet(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Wet(life);
-                        new_state
+                        ClothesState::Wet(life)
                     }
                 }
-                &ClothesState::Tattered => {
-                    let new_state = ClothesState::Tattered;
-                    new_state
-                }
+                ClothesState::Tattered => ClothesState::Tattered,
             },
 
-            &ClothesAction::Dry => match starting_state {
-                &ClothesState::Clean(mut life) => {
+            ClothesAction::Dry => match starting_state {
+                ClothesState::Clean(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Clean(life);
-                        new_state
+                        ClothesState::Clean(life)
                     }
                 }
-                &ClothesState::Dirty(mut life) => {
+                ClothesState::Dirty(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Dirty(life);
-                        new_state
+                        ClothesState::Dirty(life)
                     }
                 }
-                &ClothesState::Wet(mut life) => {
+                ClothesState::Wet(mut life) => {
                     if life == 1 {
-                        let new_state = ClothesState::Tattered;
-                        new_state
+                        ClothesState::Tattered
                     } else {
                         life -= 1;
-                        let new_state = ClothesState::Clean(life);
-                        new_state
+                        ClothesState::Clean(life)
                     }
                 }
-                &ClothesState::Tattered => {
-                    let new_state = ClothesState::Tattered;
-                    new_state
-                }
+                ClothesState::Tattered => ClothesState::Tattered,
             },
         }
     }
