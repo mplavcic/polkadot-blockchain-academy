@@ -38,12 +38,36 @@ pub struct Header {
 impl Header {
     /// Returns a new valid genesis header.
     fn genesis() -> Self {
-        todo!("Exercise 1")
+        Self {
+            parent: 0,
+            height: 0,
+            extrinsic: 0,
+            state: 0,
+            consensus_digest: 0,
+        }
     }
 
     /// Create and return a valid child header.
     fn child(&self, extrinsic: u64) -> Self {
-        todo!("Exercise 2")
+        let mut child = Self {
+            parent: hash(self),
+            height: self.height + 1,
+            extrinsic,
+            state: self.state + extrinsic,
+            consensus_digest: 0,
+        };
+
+        let mut child_hash = 0;
+        let mut flag = true;
+        while flag {
+            child_hash = hash(&child);
+            if child_hash > THRESHOLD {
+                child.consensus_digest += 1;
+            } else {
+                flag = false;
+            }
+        }
+        child
     }
 
     /// Verify that all the given headers form a valid chain from this header to the tip.
@@ -51,7 +75,20 @@ impl Header {
     /// In addition to all the rules we had before, we now need to check that the block hash
     /// is below a specific threshold.
     fn verify_sub_chain(&self, chain: &[Header]) -> bool {
-        todo!("Exercise 3")
+        let mut parent = self;
+
+        let result = chain.iter().all(|header| {
+            if header.parent == hash(parent)
+                && header.height == parent.height + 1
+                && header.state == parent.state + header.extrinsic
+                && hash(&header) < THRESHOLD
+            {
+                parent = header;
+                return true;
+            }
+            false
+        });
+        result
     }
 
     // After the blockchain ran for a while, a political rift formed in the community.
@@ -63,13 +100,102 @@ impl Header {
     /// verify that the given headers form a valid chain.
     /// In this case "valid" means that the STATE MUST BE EVEN.
     fn verify_sub_chain_even(&self, chain: &[Header]) -> bool {
-        todo!("Exercise 4")
+        // both any_state and even_state are mutating this variable as they iterate through chain
+        let mut parent = self.clone();
+
+        fn any_state(parent: &mut Header, sub_chain: &[Header]) -> bool {
+            let result = sub_chain.iter().all(|header| {
+                if header.parent == hash(parent)
+                    && header.height == parent.height + 1
+                    && header.state == parent.state + header.extrinsic
+                    && hash(&header) < THRESHOLD
+                {
+                    *parent = header.clone();
+                    return true;
+                }
+                return false;
+            });
+            result
+        }
+
+        fn even_state(parent: &mut Header, sub_chain: &[Header]) -> bool {
+            let result = sub_chain.iter().all(|header| {
+                if header.parent == hash(parent)
+                    && header.height == parent.height + 1
+                    && header.state == parent.state + header.extrinsic
+                    && hash(&header) < THRESHOLD
+                    && (header.state % 2) == 0
+                {
+                    *parent = header.clone();
+                    return true;
+                }
+                return false;
+            });
+            result
+        }
+
+        if chain[0].height >= FORK_HEIGHT {
+            even_state(&mut parent, chain)
+        } else {
+            let sub_chain1 = &chain[..(FORK_HEIGHT as usize)];
+            let result1 = any_state(&mut parent, sub_chain1);
+
+            let sub_chain2 = &chain[(FORK_HEIGHT as usize)..];
+            let result2 = even_state(&mut parent, sub_chain2);
+
+            result1 && result2
+        }
     }
 
     /// verify that the given headers form a valid chain.
     /// In this case "valid" means that the STATE MUST BE ODD.
     fn verify_sub_chain_odd(&self, chain: &[Header]) -> bool {
-        todo!("Exercise 5")
+        // both any_state and odd_state are mutating this variable as they iterate through chain,
+        // once we pass FORK_HEIGHT we still need to check parent for all other conditions
+        let mut parent = self.clone();
+
+        fn any_state(parent: &mut Header, sub_chain: &[Header]) -> bool {
+            let result = sub_chain.iter().all(|header| {
+                if header.parent == hash(parent)
+                    && header.height == parent.height + 1
+                    && header.state == parent.state + header.extrinsic
+                    && hash(&header) < THRESHOLD
+                {
+                    *parent = header.clone();
+                    return true;
+                }
+                return false;
+            });
+            result
+        }
+
+        fn odd_state(parent: &mut Header, sub_chain: &[Header]) -> bool {
+            let result = sub_chain.iter().all(|header| {
+                if header.parent == hash(parent)
+                    && header.height == parent.height + 1
+                    && header.state == parent.state + header.extrinsic
+                    && hash(&header) < THRESHOLD
+                    && (header.state % 2) != 0
+                {
+                    *parent = header.clone();
+                    return true;
+                }
+                return false;
+            });
+            result
+        }
+
+        if chain[0].height >= FORK_HEIGHT {
+            odd_state(&mut parent, chain)
+        } else {
+            let sub_chain1 = &chain[..(FORK_HEIGHT as usize)];
+            let result1 = any_state(&mut parent, sub_chain1);
+
+            let sub_chain2 = &chain[(FORK_HEIGHT as usize)..];
+            let result2 = odd_state(&mut parent, sub_chain2);
+
+            result1 && result2
+        }
     }
 }
 
@@ -90,7 +216,29 @@ impl Header {
 /// G -- 1 -- 2
 ///            \-- 3'-- 4'
 fn build_contentious_forked_chain() -> (Vec<Header>, Vec<Header>, Vec<Header>) {
-    todo!("Exercise 6")
+    let mut common = Vec::with_capacity(2);
+    let mut even = Vec::with_capacity(2);
+    let mut odd = Vec::with_capacity(2);
+
+    let genesis = Header::genesis();
+    let common_header1 = genesis.child(1);
+
+    let even_header1 = common_header1.child(1);
+    let even_header2 = even_header1.child(2);
+
+    let odd_header1 = common_header1.child(2);
+    let odd_header2 = odd_header1.child(2);
+
+    common.push(genesis);
+    common.push(common_header1);
+
+    even.push(even_header1);
+    even.push(even_header2);
+
+    odd.push(odd_header1);
+    odd.push(odd_header2);
+
+    (common, even, odd)
 }
 
 // To run these tests: `cargo test bc_3`

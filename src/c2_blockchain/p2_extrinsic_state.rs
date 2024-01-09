@@ -134,7 +134,7 @@ fn build_an_invalid_chain() -> Vec<Header> {
 fn build_forked_chain() -> (Vec<Header>, Vec<Header>) {
     let mut chain1 = Vec::with_capacity(3);
     let mut chain2 = Vec::with_capacity(3);
-    
+
     let genesis = Header::genesis();
     let header1 = genesis.child(1);
     let header2_1 = header1.child(2);
