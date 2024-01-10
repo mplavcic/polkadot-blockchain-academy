@@ -57,14 +57,12 @@ impl Header {
             consensus_digest: 0,
         };
 
-        let mut child_hash = 0;
-        let mut flag = true;
-        while flag {
-            child_hash = hash(&child);
+        loop {
+            let child_hash = hash(&child);
             if child_hash > THRESHOLD {
                 child.consensus_digest += 1;
             } else {
-                flag = false;
+                break;
             }
         }
         child
