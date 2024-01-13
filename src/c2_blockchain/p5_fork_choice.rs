@@ -33,7 +33,8 @@ pub trait ForkChoice {
     /// two chains. Therefore this method has a provided implementation. However,
     /// it may be much more performant to write a fork-choice-specific implementation.
     fn best_chain<'a>(candidate_chains: &[&'a [Header]]) -> &'a [Header] {
-        todo!("Exercise 1")
+        // TODO: we are just returning first chain for now...
+        candidate_chains[0]
     }
 }
 
@@ -42,14 +43,17 @@ pub struct LongestChainRule;
 
 impl ForkChoice for LongestChainRule {
     fn first_chain_is_better(chain_1: &[Header], chain_2: &[Header]) -> bool {
-        todo!("Exercise 1")
+        chain_1.len() > chain_2.len()
     }
 
     fn best_chain<'a>(candidate_chains: &[&'a [Header]]) -> &'a [Header] {
-        // Remember, this method is provided. You _can_ solve the exercise by
-        // simply deleting this block. It is up to you to decide whether this fork
-        // choice warrants a custom implementation.
-        todo!("Exercise 3")
+        let mut best = candidate_chains[0];
+        for chain in candidate_chains[1..].iter() {
+            if chain.len() > best.len() {
+                best = chain;
+            }
+        }
+        best
     }
 }
 
@@ -68,17 +72,50 @@ pub struct HeaviestChainRule;
 /// usage is that you create a block using the normal `Block.child()` method
 /// and then pass the block to this helper for additional mining.
 fn mine_extra_hard(block: &mut Block, threshold: u64) {
-    todo!("Exercise 4")
+    // TODO
+    loop {
+        let header_hash = hash(&block.header);
+        if header_hash > threshold {
+            block.header.consensus_digest += 1;
+        } else {
+            break;
+        }
+    }
 }
 
 impl ForkChoice for HeaviestChainRule {
     fn first_chain_is_better(chain_1: &[Header], chain_2: &[Header]) -> bool {
-        todo!("Exercise 5")
+        let work_1 = chain_1
+            .iter()
+            .filter_map(|header| THRESHOLD.checked_sub(hash(header)))
+            .sum::<u64>();
+        let work_2 = chain_2
+            .iter()
+            .filter_map(|header| THRESHOLD.checked_sub(hash(header)))
+            .sum::<u64>();
+
+        work_1 > work_2
     }
 
     fn best_chain<'a>(candidate_chains: &[&'a [Header]]) -> &'a [Header] {
-        // Remember, this method is provided.
-        todo!("Exercise 6")
+        let mut current_best = candidate_chains[0];
+
+        let current_best_work = current_best
+            .iter()
+            .filter_map(|header| THRESHOLD.checked_sub(hash(header)))
+            .sum::<u64>();
+
+        for chain in candidate_chains[1..].iter() {
+            let candidate_work = chain
+                .iter()
+                .filter_map(|header| THRESHOLD.checked_sub(hash(header)))
+                .sum::<u64>();
+
+            if candidate_work > current_best_work {
+                current_best = chain;
+            }
+        }
+        current_best
     }
 }
 /// The best chain is the one with the most blocks that have even hashes.
@@ -99,12 +136,34 @@ pub struct MostBlocksWithEvenHash;
 
 impl ForkChoice for MostBlocksWithEvenHash {
     fn first_chain_is_better(chain_1: &[Header], chain_2: &[Header]) -> bool {
-        todo!("Exercise 7")
+        let even_hashes_1 = chain_1
+            .iter()
+            .filter(|header| hash(&header) % 2 == 0)
+            .count();
+        let even_hashes_2 = chain_2
+            .iter()
+            .filter(|header| hash(&header) % 2 == 0)
+            .count();
+
+        even_hashes_1 > even_hashes_2
     }
 
     fn best_chain<'a>(candidate_chains: &[&'a [Header]]) -> &'a [Header] {
-        // Remember, this method is provided.
-        todo!("Exercise 8")
+        let mut current_best = candidate_chains[0];
+
+        let current_best_work = current_best
+            .iter()
+            .filter(|header| hash(&header) % 2 == 0)
+            .count();
+
+        for chain in candidate_chains[1..].iter() {
+            let candidate_work = chain.iter().filter(|header| hash(&header) % 2 == 0).count();
+
+            if candidate_work > current_best_work {
+                current_best = chain;
+            }
+        }
+        current_best
     }
 }
 
@@ -131,7 +190,69 @@ impl ForkChoice for MostBlocksWithEvenHash {
 /// 2. The suffix chain which is longer (non-overlapping with the common prefix)
 /// 3. The suffix chain with more work (non-overlapping with the common prefix)
 fn create_fork_one_side_longer_other_side_heavier() -> (Vec<Header>, Vec<Header>, Vec<Header>) {
-    todo!("Exercise 9")
+    let mut common = Vec::with_capacity(2);
+    let mut longest = Vec::with_capacity(4);
+    let mut pow = Vec::with_capacity(3);
+
+    let genesis_b = Block::genesis();
+    let common_b = genesis_b.child(vec![1, 2, 3]);
+
+    let longest_b_1 = common_b.child(vec![1, 2, 3]);
+    let longest_b_2 = longest_b_1.child(vec![1, 2, 3]);
+    let longest_b_3 = longest_b_2.child(vec![1, 2, 3]);
+    let longest_b_4 = longest_b_3.child(vec![1, 2, 3]);
+
+    let longest_work_1 = THRESHOLD
+        .checked_sub(hash(&longest_b_1.header))
+        .unwrap_or_default();
+    let longest_work_2 = THRESHOLD
+        .checked_sub(hash(&longest_b_2.header))
+        .unwrap_or_default();
+    let longest_work_3 = THRESHOLD
+        .checked_sub(hash(&longest_b_3.header))
+        .unwrap_or_default();
+    let longest_work_4 = THRESHOLD
+        .checked_sub(hash(&longest_b_4.header))
+        .unwrap_or_default();
+    let longest_work = longest_work_1 + longest_work_2 + longest_work_3 + longest_work_4;
+
+    let pow_b_1 = common_b.child(vec![1, 2, 3, 4, 5, 6]);
+    let pow_b_2 = pow_b_1.child(vec![1, 2, 3, 4, 5, 6]);
+    let mut pow_b_3 = pow_b_2.child(vec![1, 2, 3, 4, 5, 6]);
+
+    let pow_work_1 = THRESHOLD
+        .checked_sub(hash(&pow_b_1.header))
+        .unwrap_or_default();
+    let pow_work_2 = THRESHOLD
+        .checked_sub(hash(&pow_b_2.header))
+        .unwrap_or_default();
+    let mut pow_work_3 = THRESHOLD
+        .checked_sub(hash(&pow_b_3.header))
+        .unwrap_or_default();
+    let mut pow_work = pow_work_1 + pow_work_2 + pow_work_3;
+
+    while pow_work <= longest_work {
+        mine_extra_hard(&mut pow_b_3, u64::MAX / 100);
+
+        if let Some(work) = THRESHOLD.checked_sub(hash(&pow_b_3.header)) {
+            pow_work_3 = work;
+            pow_work = pow_work_1 + pow_work_2 + pow_work_3;
+        }
+    }
+
+    common.push(genesis_b.header);
+    common.push(common_b.header);
+
+    longest.push(longest_b_1.header);
+    longest.push(longest_b_2.header);
+    longest.push(longest_b_3.header);
+    longest.push(longest_b_4.header);
+
+    pow.push(pow_b_1.header);
+    pow.push(pow_b_2.header);
+    pow.push(pow_b_3.header);
+
+    (common, longest, pow)
 }
 
 #[test]
